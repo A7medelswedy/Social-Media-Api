@@ -28,7 +28,7 @@ namespace Social_Media_Web_API.Controllers
                 UserName = u.UserName,
                 Email = u.Email,
                 Bio = u.Bio,
-                Icon = u.Icon
+                Icon = u.Icon 
             });
 
             return Ok(userDtos);
@@ -61,7 +61,7 @@ namespace Social_Media_Web_API.Controllers
                 UserName = dto.UserName,
                 Email = dto.Email,
                 Bio = dto.Bio,
-                Icon = dto.Icon
+                Icon =  string.IsNullOrEmpty(dto.Icon) ? "🤨" : dto.Icon
             };
 
             await _userRepository.AddAsync(user);
