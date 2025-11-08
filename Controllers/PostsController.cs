@@ -66,9 +66,9 @@ namespace Social_Media_Web_API.Controllers
                 CreatedAt = DateTime.Now,
                 UserId = dto.UserId
             };
-
+           
             await _postRepository.AddAsync(post);
-            return CreatedAtAction(nameof(GetPostById), dto);
+            return CreatedAtAction(nameof(GetPostById), new {Id=post.Id}, dto);
         }
 
         [HttpPut("{id}")]
