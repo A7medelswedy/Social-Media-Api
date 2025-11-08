@@ -5,9 +5,10 @@ using Social_Media_Web_API.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// DB: SQLite عشان Render Free + Flutter
+// SQLite Database
+var dbPath = Path.Combine(Directory.GetCurrentDirectory(), "SocialMediaDB.db");
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseSqlite("Data Source=SocialMediaDB.db")
+    options.UseSqlite($"Data Source={dbPath}")
 );
 
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
@@ -28,17 +29,25 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-app.UseCors("AllowFlutter");
-
-if (app.Environment.IsDevelopment())
+// اعمل Database تلقائي
+using (var scope = app.Services.CreateScope())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.EnsureCreated();
 }
 
-app.UseHttpsRedirection();
-app.UseAuthorization();
+app.UseCors("AllowFlutter");
 
+// Swagger في Production كمان
+app.UseSwagger();
+app.UseSwaggerUI();
+
+// اقرأ الـ Port من Railway
+var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+app.Urls.Clear();
+app.Urls.Add($"http://0.0.0.0:{port}");
+
+app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
