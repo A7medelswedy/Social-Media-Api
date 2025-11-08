@@ -1,4 +1,3 @@
-
 using Microsoft.EntityFrameworkCore;
 using Social_Media_Web_API.Data;
 using Social_Media_Web_API.Repositories.Implementation;
@@ -12,23 +11,19 @@ namespace Social_Media_Web_API
         {
             var builder = WebApplication.CreateBuilder(args);
 
-
+            // Use connection string from environment variable "con"
             builder.Services.AddDbContext<AppDbContext>(
-                           options => options.UseSqlServer(builder.Configuration.GetConnectionString("con"))
-                           );
-
-
+                options => options.UseSqlServer(builder.Configuration.GetConnectionString("con"))
+            );
 
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IPostRepository, PostRepository>();
 
-            // Add services to the container.
-
             builder.Services.AddControllers();
-            // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
+
             builder.Services.AddCors(options =>
             {
                 options.AddPolicy("AllowFlutter",
@@ -39,24 +34,17 @@ namespace Social_Media_Web_API
 
             var app = builder.Build();
 
+            // Use CORS
             app.UseCors("AllowFlutter");
 
+            // Swagger visible to everyone
+            app.UseSwagger();
+            app.UseSwaggerUI();
 
-
-        
-
-            // Configure the HTTP request pipeline.
-            if (app.Environment.IsDevelopment())
-            {
-                app.UseSwagger();
-                app.UseSwaggerUI();
-            }
-
-            app.UseHttpsRedirection();
+            // Optional: comment this line if HTTPS causes issues on Render
+            // app.UseHttpsRedirection();
 
             app.UseAuthorization();
-
-
             app.MapControllers();
 
             app.Run();

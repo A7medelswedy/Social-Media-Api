@@ -13,10 +13,11 @@ namespace Social_Media_Web_API.Controllers
     public class PostController : ControllerBase
     {
         private readonly IPostRepository _postRepository;
-
-        public PostController(IPostRepository postRepository)
+        private readonly IUserRepository _userRepository;
+        public PostController(IPostRepository postRepository, IUserRepository userRepository)
         {
             _postRepository = postRepository;
+            _userRepository = userRepository;
         }
 
         [HttpGet]
@@ -30,7 +31,7 @@ namespace Social_Media_Web_API.Controllers
                 
                 CreatedAt = p.CreatedAt,
                 //UserId = p.UserId,
-                UserName = p.User?.UserName
+                UserName = p.User?.UserName ?? "Anonymous user"
             });
 
             return Ok(postDtos);
@@ -49,7 +50,7 @@ namespace Social_Media_Web_API.Controllers
                 Content = post.Content,
                 CreatedAt = post.CreatedAt,
                 //UserId = post.UserId
-                UserName = post.User.UserName
+                UserName = post.User.UserName ?? "Anonymous user"
             };
 
             return Ok(postDto);
@@ -58,6 +59,7 @@ namespace Social_Media_Web_API.Controllers
         [HttpPost]
         public async Task<IActionResult> AddPost([FromBody] PostCreateDto dto)
         {
+            var user = await _userRepository.GetByIdAsync(dto.UserId);
             var post = new Post
             {
                 Content = dto.Content,
@@ -66,7 +68,7 @@ namespace Social_Media_Web_API.Controllers
             };
 
             await _postRepository.AddAsync(post);
-            return Ok("Post added successfully");
+            return CreatedAtAction(nameof(GetPostById), dto);
         }
 
         [HttpPut("{id}")]

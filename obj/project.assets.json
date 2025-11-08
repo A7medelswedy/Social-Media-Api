@@ -5164,9 +5164,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\source\\repos\\Social Media Web API\\Social Media Web API.csproj",
-      "projectName": "Social Media Web API",
-      "projectPath": "D:\\source\\repos\\Social Media Web API\\Social Media Web API.csproj",
+      "projectUniqueName": "D:\\source\\repos\\Social Media Web API\\SocialMediaWebAPI.csproj",
+      "projectName": "SocialMediaWebAPI",
+      "projectPath": "D:\\source\\repos\\Social Media Web API\\SocialMediaWebAPI.csproj",
       "packagesPath": "C:\\Users\\amras\\.nuget\\packages\\",
       "outputPath": "D:\\source\\repos\\Social Media Web API\\obj\\",
       "projectStyle": "PackageReference",
