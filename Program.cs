@@ -3,51 +3,42 @@ using Social_Media_Web_API.Data;
 using Social_Media_Web_API.Repositories.Implementation;
 using Social_Media_Web_API.Repositories.Interfaces;
 
-namespace Social_Media_Web_API
+var builder = WebApplication.CreateBuilder(args);
+
+// DB: SQLite عشان Render Free + Flutter
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlite("Data Source=SocialMediaDB.db")
+);
+
+builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IPostRepository, PostRepository>();
+
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors(options =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+    options.AddPolicy("AllowFlutter",
+        policy => policy.AllowAnyOrigin()
+                        .AllowAnyHeader()
+                        .AllowAnyMethod());
+});
 
-            // Use connection string from environment variable "con"
-            builder.Services.AddDbContext<AppDbContext>(
-                options => options.UseSqlServer(builder.Configuration.GetConnectionString("con"))
-            );
+var app = builder.Build();
 
-            builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
-            builder.Services.AddScoped<IUserRepository, UserRepository>();
-            builder.Services.AddScoped<IPostRepository, PostRepository>();
+app.UseCors("AllowFlutter");
 
-            builder.Services.AddControllers();
-            builder.Services.AddEndpointsApiExplorer();
-            builder.Services.AddSwaggerGen();
-
-            builder.Services.AddCors(options =>
-            {
-                options.AddPolicy("AllowFlutter",
-                    policy => policy.AllowAnyOrigin()
-                                    .AllowAnyHeader()
-                                    .AllowAnyMethod());
-            });
-
-            var app = builder.Build();
-
-            // Use CORS
-            app.UseCors("AllowFlutter");
-
-            // Swagger visible to everyone
-            app.UseSwagger();
-            app.UseSwaggerUI();
-
-            // Optional: comment this line if HTTPS causes issues on Render
-            // app.UseHttpsRedirection();
-
-            app.UseAuthorization();
-            app.MapControllers();
-
-            app.Run();
-        }
-    }
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
 }
+
+app.UseHttpsRedirection();
+app.UseAuthorization();
+
+app.MapControllers();
+
+app.Run();
