@@ -21,7 +21,7 @@ namespace Social_Media_Web_API.Data
 new User { Id = 2, UserName = "Aya", Email = "aya@example.com", Bio = "Flutter Eng wants an offer 😑", Icon = "emoji_events" },
 new User { Id = 3, UserName = "Asia", Email = "asia@example.com", Bio = "Pretty, huh? 🎨", Icon = "brush" },
 new User { Id = 4, UserName = "Ashraqat", Email = "ashraqat@example.com", Bio = "Backend dev, send help ☕", Icon = "explore" },
-new User { Id = 5, UserName = "Mostafa", Email = "mostafa@example.com", Bio = "AI guy, robots > humans 🤖", Icon = "smart_toy" },
+new User { Id = 5, UserName = "Mostafa", Email = "mostafa@example.com", Bio = "AI guy, robots > humans 🤖", Icon = "smart_toy" }
             );
 
 
