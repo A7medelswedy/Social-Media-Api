@@ -3,6 +3,7 @@
 using Social_Media_Web_API.Dtos.AccountDTO;
 using Social_Media_Web_API.Models;
 using Social_Media_Web_API.Repositories.Interfaces;
+using System.Text.RegularExpressions;
 
 namespace Social_Media_Web_API.Controllers
 {
@@ -17,15 +18,22 @@ namespace Social_Media_Web_API.Controllers
             _accountRepository = accountRepository;
         }
 
-        // Signup
         [HttpPost("Signup")]
         public async Task<IActionResult> Signup([FromBody] AccountCreateDto dto)
         {
-            // Validate passwords match
+            // Email validation
+            var emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
+            if (!emailRegex.IsMatch(dto.Email))
+                return BadRequest("Invalid email format");
+
+            // Password validation
+            var passwordRegex = new Regex(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,12}$");
+            if (!passwordRegex.IsMatch(dto.Password))
+                return BadRequest("Password must be 6-12 chars, contain uppercase, lowercase, and a number");
+
             if (dto.Password != dto.ConfirmPassword)
                 return BadRequest("Passwords do not match");
 
-            // check if email is already existed
             var existingAccount = await _accountRepository.GetByEmailAsync(dto.Email);
             if (existingAccount != null)
                 return BadRequest("Email already exists");
@@ -33,12 +41,13 @@ namespace Social_Media_Web_API.Controllers
             var account = new Account
             {
                 Email = dto.Email,
-                Password = dto.Password 
+                Password = dto.Password
             };
 
             await _accountRepository.AddAsync(account);
             return Ok(new { Message = "Account created successfully", AccountId = account.Id });
         }
+
 
         // Login
         [HttpPost("Login")]
