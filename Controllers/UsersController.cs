@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Social_Media_Web_API.Data;
 using Social_Media_Web_API.Dtos.UserDto;
 using Social_Media_Web_API.Models;
+using Social_Media_Web_API.Repositories;
 using Social_Media_Web_API.Repositories.Interfaces;
 
 namespace Social_Media_Web_API.Controllers
@@ -12,28 +13,39 @@ namespace Social_Media_Web_API.Controllers
     public class UserController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
+        private readonly IAccountRepository _accountRepository;
 
-        public UserController(IUserRepository userRepository)
+        public UserController(IUserRepository userRepository, IAccountRepository accountRepository)
         {
             _userRepository = userRepository;
+            _accountRepository = accountRepository;
         }
 
+        //  GET ALL USERS
         [HttpGet]
         public async Task<IActionResult> GetAllUsers()
         {
             var users = await _userRepository.GetAllAsync();
-            var userDtos = users.Select(u => new UserReadDto
-            {
-                Id = u.Id,
-                UserName = u.UserName,
-                Email = u.Email,
-                Bio = u.Bio,
-                Icon = u.Icon 
-            });
 
-            return Ok(userDtos);
+            var userDtos = users.Select(u => new
+            {
+                id = u.Id,
+                userName = u.UserName,
+                email = u.Email,
+                bio = u.Bio,
+                icon = u.Icon
+            }).ToList();
+
+        
+            var response = new
+            {
+                results = userDtos
+            };
+
+            return Ok(response);
         }
 
+        //  GET USER BY ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetUserById(int id)
         {
@@ -41,33 +53,64 @@ namespace Social_Media_Web_API.Controllers
             if (user == null)
                 return NotFound();
 
-            var userDto = new UserReadDto
+            var userDto = new
             {
-                Id = user.Id,
-                UserName = user.UserName,
-                Email = user.Email,
-                Bio = user.Bio,
-                Icon = user.Icon
+                id = user.Id,
+                userName = user.UserName,
+                email = user.Email,
+                bio = user.Bio,
+                icon = user.Icon
             };
 
-            return Ok(userDto);
+            var response = new
+            {
+                results = new[] { userDto }
+            };
+
+            return Ok(response);
         }
 
+        //  ADD USER
         [HttpPost]
         public async Task<IActionResult> AddUser([FromBody] UserCreateDto dto)
         {
+            var account = await _accountRepository.GetByIdAsync(dto.AccountId);
+            if (account == null)
+                return NotFound("Account not found");
+
+            var existingUser = await _userRepository.GetByAccountIdAsync(dto.AccountId);
+            if (existingUser != null)
+                return BadRequest("This account already has a profile");
+
             var user = new User
             {
                 UserName = dto.UserName,
-                Email = dto.Email,
                 Bio = dto.Bio,
-                Icon =  string.IsNullOrEmpty(dto.Icon) ? "🤨" : dto.Icon
+                Icon = string.IsNullOrEmpty(dto.Icon) ? "🤨" : dto.Icon,
+                AccountId = dto.AccountId
             };
 
             await _userRepository.AddAsync(user);
-            return Ok("User created successfully");
+
+            var response = new
+            {
+                results = new[]
+                {
+                    new
+                    {
+                        message = "User profile created successfully",
+                        userId = user.Id,
+                        userName = user.UserName,
+                        bio = user.Bio,
+                        icon = user.Icon
+                    }
+                }
+            };
+
+            return CreatedAtAction(nameof(GetUserById), new { id = user.Id }, response);
         }
 
+        //  UPDATE USER
         [HttpPut("{id}")]
         public async Task<IActionResult> UpdateUser(int id, [FromBody] UserUpdateDto dto)
         {
@@ -80,9 +123,19 @@ namespace Social_Media_Web_API.Controllers
             user.Icon = dto.Icon;
 
             await _userRepository.UpdateAsync(user);
-            return Ok("User updated successfully");
+
+            var response = new
+            {
+                results = new[]
+                {
+                    new { message = "User updated successfully" }
+                }
+            };
+
+            return Ok(response);
         }
 
+        //  DELETE USER
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteUser(int id)
         {
@@ -91,7 +144,16 @@ namespace Social_Media_Web_API.Controllers
                 return NotFound();
 
             await _userRepository.DeleteAsync(user);
-            return NoContent();
+
+            var response = new
+            {
+                results = new[]
+                {
+                    new { message = "User deleted successfully" }
+                }
+            };
+
+            return Ok(response);
         }
     }
 }

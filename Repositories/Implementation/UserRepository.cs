@@ -14,6 +14,11 @@ namespace Social_Media_Web_API.Repositories.Implementation
             _context = context;
         }
 
+        public async Task<User?> GetByAccountIdAsync(int accountId)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.AccountId == accountId);
+        }
+
         public async Task<User?> GetUserWithPostsAsync(int id)
         {
             return await _context.Users

@@ -35,7 +35,15 @@ namespace Social_Media_Web_API.Controllers
                 
                 UserName = p.User?.UserName ?? "Anonymous user"
             });
-            return Ok(postDtos);
+
+
+
+            var response = new
+            {
+                results = postDtos
+            };
+
+            return Ok(response);
         }
 
         [HttpGet("{id}")]
@@ -55,7 +63,14 @@ namespace Social_Media_Web_API.Controllers
                 
                 UserName = post.User?.UserName ?? "Anonymous user"
             };
-            return Ok(postDto);
+
+
+            var response = new
+            {
+                results = new[] { postDto }
+            };
+
+            return Ok(response);
         }
 
         [HttpPost]

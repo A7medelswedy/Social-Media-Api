@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Social_Media_Web_API.Data;
+using Social_Media_Web_API.Repositories;
 using Social_Media_Web_API.Repositories.Implementation;
 using Social_Media_Web_API.Repositories.Interfaces;
 
@@ -14,6 +15,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IPostRepository, PostRepository>();
+builder.Services.AddScoped<IAccountRepository,AccountRepository>();
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
@@ -43,9 +45,9 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 // اقرأ الـ Port من Railway
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-app.Urls.Clear();
-app.Urls.Add($"http://0.0.0.0:{port}");
+//var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
+//app.Urls.Clear();
+//app.Urls.Add($"http://0.0.0.0:{port}");
 
 app.UseAuthorization();
 app.MapControllers();

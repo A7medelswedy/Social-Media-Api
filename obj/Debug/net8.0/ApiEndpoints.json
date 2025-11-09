@@ -1,5 +1,37 @@
 [
   {
+    "ContainingType": "Social_Media_Web_API.Controllers.AccountController",
+    "Method": "Login",
+    "RelativePath": "api/Account/Login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Social_Media_Web_API.Dtos.AccountDTO.AccountLoginDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "Social_Media_Web_API.Controllers.AccountController",
+    "Method": "Signup",
+    "RelativePath": "api/Account/Signup",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "Social_Media_Web_API.Dtos.AccountDTO.AccountCreateDto",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "Social_Media_Web_API.Controllers.PostController",
     "Method": "GetAllPosts",
     "RelativePath": "api/Post",

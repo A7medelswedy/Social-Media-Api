@@ -9,20 +9,36 @@ namespace Social_Media_Web_API.Data
 
         public DbSet<User> Users { get; set; }
         public DbSet<Post> Posts { get; set; }
-
+        public DbSet<Account> Accounts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
 
+            modelBuilder.Entity<Account>()
+    .HasOne(a => a.User)
+    .WithOne(u => u.Account)
+    .HasForeignKey<User>(u => u.AccountId);
+
+
+            modelBuilder.Entity<Account>().HasData(
+    new Account { Id = 1, Email = "sewedy@example.com", Password = "123456" },
+    new Account { Id = 2, Email = "aya@example.com", Password = "flutter123" },
+    new Account { Id = 3, Email = "asia@example.com", Password = "artlover" },
+    new Account { Id = 4, Email = "ashraqat@example.com", Password = "backendqueen" },
+    new Account { Id = 5, Email = "mostafa@example.com", Password = "aiguy2025" }
+);
+
+
             modelBuilder.Entity<User>().HasData(
-                new User { Id = 1, UserName = "Sewedy", Email = "sewedy@example.com", Bio = "idont care", Icon = "psychology" },
-new User { Id = 2, UserName = "Aya", Email = "aya@example.com", Bio = "Flutter Eng wants an offer 😑", Icon = "emoji_events" },
-new User { Id = 3, UserName = "Asia", Email = "asia@example.com", Bio = "Pretty, huh? 🎨", Icon = "brush" },
-new User { Id = 4, UserName = "Ashraqat", Email = "ashraqat@example.com", Bio = "Backend dev, send help ☕", Icon = "explore" },
-new User { Id = 5, UserName = "Mostafa", Email = "mostafa@example.com", Bio = "AI guy, robots > humans 🤖", Icon = "smart_toy" }
-            );
+      new User { Id = 1, UserName = "Sewedy", Email = "sewedy@example.com", Bio = "idont care", Icon = "psychology", AccountId = 1 },
+      new User { Id = 2, UserName = "Aya", Email = "aya@example.com", Bio = "Flutter Eng wants an offer 😑", Icon = "emoji_events", AccountId = 2 },
+      new User { Id = 3, UserName = "Asia", Email = "asia@example.com", Bio = "Pretty, huh? 🎨", Icon = "brush", AccountId = 3 },
+      new User { Id = 4, UserName = "Ashraqat", Email = "ashraqat@example.com", Bio = "Backend dev, send help ☕", Icon = "explore", AccountId = 4 },
+      new User { Id = 5, UserName = "Mostafa", Email = "mostafa@example.com", Bio = "AI guy, robots > humans 🤖", Icon = "smart_toy", AccountId = 5 }
+  );
+
 
 
             modelBuilder.Entity<Post>().HasData(

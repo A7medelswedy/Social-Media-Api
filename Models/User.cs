@@ -8,5 +8,9 @@
         public string Bio { get; set; }
         public string Icon { get; set; }
         public List<Post> Posts { get; set; } = new List<Post>();
+
+
+        public int AccountId { get; set; }   // FK
+        public Account Account { get; set; }
     }
 }
