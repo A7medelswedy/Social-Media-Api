@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Social_Media_Web_API.Data;
@@ -14,6 +14,7 @@ namespace Social_Media_Web_API.Controllers
     {
         private readonly IPostRepository _postRepository;
         private readonly IUserRepository _userRepository;
+
         public PostController(IPostRepository postRepository, IUserRepository userRepository)
         {
             _postRepository = postRepository;
@@ -24,16 +25,16 @@ namespace Social_Media_Web_API.Controllers
         public async Task<IActionResult> GetAllPosts()
         {
             var posts = await _postRepository.GetAllWithUsersAsync();
-            var postDtos = posts.Select(p => new PostReadDto
+            var postDtos = posts.Select(p => new 
             {
                 Id = p.Id,
                 Content = p.Content,
                 
-                CreatedAt = p.CreatedAt,
-                //UserId = p.UserId,
+                // ✅ string بالشكل: 2025-11-08
+                CreatedAt = p.CreatedAt.ToString("yyyy-MM-dd"),
+                
                 UserName = p.User?.UserName ?? "Anonymous user"
             });
-
             return Ok(postDtos);
         }
 
@@ -44,15 +45,16 @@ namespace Social_Media_Web_API.Controllers
             if (post == null)
                 return NotFound();
 
-            var postDto = new PostReadDto
+            var postDto = new 
             {
                 Id = post.Id,
                 Content = post.Content,
-                CreatedAt = post.CreatedAt,
-                //UserId = post.UserId
-                UserName = post.User.UserName ?? "Anonymous user"
+                
+                // ✅ string بالشكل: 2025-11-08
+                CreatedAt = post.CreatedAt.ToString("yyyy-MM-dd"),
+                
+                UserName = post.User?.UserName ?? "Anonymous user"
             };
-
             return Ok(postDto);
         }
 
@@ -60,6 +62,12 @@ namespace Social_Media_Web_API.Controllers
         public async Task<IActionResult> AddPost([FromBody] PostCreateDto dto)
         {
             var user = await _userRepository.GetByIdAsync(dto.UserId);
+            
+            if (user == null)
+            {
+                return NotFound("User not found");
+            }
+
             var post = new Post
             {
                 Content = dto.Content,
@@ -68,7 +76,8 @@ namespace Social_Media_Web_API.Controllers
             };
            
             await _postRepository.AddAsync(post);
-            return CreatedAtAction(nameof(GetPostById), new {Id=post.Id}, dto);
+            
+            return CreatedAtAction(nameof(GetPostById), new { id = post.Id }, post);
         }
 
         [HttpPut("{id}")]
