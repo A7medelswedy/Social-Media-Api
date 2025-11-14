@@ -6,7 +6,7 @@ using Social_Media_Web_API.Repositories.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// SQLite Database
+// SQllllll
 var dbPath = Path.Combine(Directory.GetCurrentDirectory(), "SocialMediaDB.db");
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlite($"Data Source={dbPath}")
